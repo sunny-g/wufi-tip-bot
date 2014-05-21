@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="ripple-python">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../ripple-python" />
+    </CLASSES>
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../ripple-python" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/../ripple-python" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../ripple-python" recursive="false" type="SOURCES" />
+  </library>
+</component>
