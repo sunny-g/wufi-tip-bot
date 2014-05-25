@@ -1,7 +1,8 @@
-import ripple
+# import ripple
 import praw
 # import json
 # import time
+import secure
 from test_account import rootAccountAddr, rootSeed
 
 
@@ -11,7 +12,7 @@ from test_account import rootAccountAddr, rootSeed
 #   wufaux-bot:         a bot to process comments
 #   myusername:         moderator for the r/djarum test sub
 
-clientConnection = ripple.Client("ws://127.0.0.1:6006")
+# clientConnection = ripple.Client("ws://127.0.0.1:6006")
 
 
 ###########################################
@@ -25,35 +26,42 @@ clientConnection = ripple.Client("ws://127.0.0.1:6006")
 #           op_of_comment
 #           comment_id (so we don't double count comments)
 
+botPassword = secure.password
 botUserAgent = "practice-tip-bot"
 redditCxn = praw.Reddit(user_agent=botUserAgent)
 redditCxn.login('wufaux-bot', password=botPassword)
 
 ##########################################
 
-def parse_inbox():
+def parse_inbox(redditObj):
+
     msgs = []
-    currentInbox = list(redditCxn.get_inbox())
+    currentInbox = list(redditObj.get_inbox())
     for msg in currentInbox:
         if isinstance(msg, praw.objects.Comment):
-            commentBody = msg.body
-            senderUserName = msg.author.__str__()
+            newMsg = Tip(msg).get_tuple()
+            msgs.append(newMsg)
 
+            ## process comment for other variables
 
-    return()
+    return(msgs)
 
-def Tip():
+class Tip():
     def __init__(self, comment):
         self.username = comment.author.__str__()
         self.commentBody = comment.body
+        self.tipAmount = None
 
+    # def parseForTipAmounts(self):
+        body = self.commentBody
+        # encodes to ascii, splits by whitespace, reverses to get last bot mention
+        body = body.encode("ascii", "ignore").split()[::-1]
+        if '/u/wufaux-bot' in body:
+            if body[body.index('/u/wufaux-bot') + 1] == 'wufi':
+                self.tipAmount = body[body.index('wufi') + 1]
 
-##########################################
-##########################################
-##########################################
-
-
-
+    def get_tuple(self):
+        return((self.username, self.commentBody, self.tipAmount))
 
 
 
