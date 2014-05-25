@@ -10,4 +10,5 @@ redditCxn.login('wufaux-bot', secure.password)
 
 # prints the parsedComment
 parsedComment = main.parse_inbox(redditCxn)
-print parsedComment
+
+

@@ -6,7 +6,7 @@ import secure
 from test_account import rootAccountAddr, rootSeed
 
 
-# user accounts:
+# reddit accounts:
 #   djarum-root:        mapped to the rootAccountAddr and rootSeed
 #   djarum-dummie1:     a dummie account to leave comments
 #   wufaux-bot:         a bot to process comments
@@ -34,25 +34,26 @@ redditCxn.login('wufaux-bot', password=botPassword)
 ##########################################
 
 def parse_inbox(redditObj):
-
-    msgs = []
+    '''Takes obj of type Reddit and returns a list of tuples containing Tip attributes'''
+    msgs_as_tips = []
+    comments = []
     currentInbox = list(redditObj.get_inbox())
     for msg in currentInbox:
         if isinstance(msg, praw.objects.Comment):
+            comments.append(msg)
             newMsg = Tip(msg).get_tuple()
-            msgs.append(newMsg)
-
-            ## process comment for other variables
-
-    return(msgs)
+            msgs_as_tips.append(newMsg)
+    return(msgs_as_tips, comments)
 
 class Tip():
-    def __init__(self, comment):
-        self.username = comment.author.__str__()
-        self.commentBody = comment.body
+    # should inherit from Comment type, since it is already taking a Comment obj in
+    def __init__(self, tip_comment):
+        self.username = tip_comment.author.__str__()
+        self.commentBody = tip_comment.body
         self.tipAmount = None
 
-    # def parseForTipAmounts(self):
+    # get tip amounts
+        '''Currently, only gets tips if they mention of /u/wufaux-bot at the end of the comment'''
         body = self.commentBody
         # encodes to ascii, splits by whitespace, reverses to get last bot mention
         body = body.encode("ascii", "ignore").split()[::-1]
@@ -60,8 +61,16 @@ class Tip():
             if body[body.index('/u/wufaux-bot') + 1] == 'wufi':
                 self.tipAmount = body[body.index('wufi') + 1]
 
+    # if tip_comment.is_root():
+    #   self.recipient = postAuthor
+    # else:
+    #   self.recipient =
+
+    # get recipient's username
+
+
     def get_tuple(self):
-        return((self.username, self.commentBody, self.tipAmount))
+        return(self.username, self.commentBody, self.tipAmount)
 
 
 
